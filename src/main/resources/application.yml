@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  http2:
+    enabled: true
+  servlet:
+    context-path: /api/v1/todo-service
+
+spring:
+  application:
+    name: todo-service
+  datasource:
+    url: jdbc:mysql://${TODO_DB_HOST:localhost}:${TODO_DB_PORT:15002}/${TODO_DB_DATABASE:todo-database}
+    username: ${TODO_DB_USER:todo-user}
+    password: ${TODO_DB_PASSWORD:todo-password}
+    driver-class-name: com.mysql.cj.jdbc.Driver

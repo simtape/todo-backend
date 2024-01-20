@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  todo-service-db:
+    container_name: 'todo-service-db'
+    image: 'bitnami/mysql:latest'
+    restart: 'unless-stopped'
+    volumes:
+      - 'todo-service-db-data:/bitnami/mysql'
+    environment:
+        - 'MYSQL_ROOT_PASSWORD=${TODO_DB_ROOT_PASSWORD:-todo-root-password}'
+        - 'MYSQL_USER=${TODO_DB_USER:-todo-user}'
+        - 'MYSQL_PASSWORD=${TODO_DB_PASSWORD:-todo-password}'
+        - 'MYSQL_DATABASE=${TODO_DB_DATABASE:-todo-database}'
+    ports:
+        - '15002:3306'
+    networks:
+        - todo-network
+
+volumes:
+    todo-service-db-data:
+        driver: local
+
+networks:
+    todo-network:
+      name: todo-network
+      driver: bridge
