@@ -5,21 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
-    private Long id;
-
+public class Doer {
     private String name;
+    private String surname;
+    private String email;
 
-    private Instant createdOn;
-
-    private Instant updatedOn;
-
-    private List<Todo> todos;
+    private List<Todo> todoList;
+    private List<Tag> tagList;
 }

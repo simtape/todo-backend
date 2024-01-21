@@ -1,4 +1,4 @@
-package it.unimol.todo.models.dto;
+package it.unimol.todo.models.dto.todo;
 
 import it.unimol.todo.models.entities.Todo;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -17,9 +17,10 @@ public class TodoDto {
     private String title;
     private String description;
     private Boolean completed;
-    private Timestamp createdOn;
-    private Timestamp updatedOn;
-    private Timestamp completedOn;
+    private Instant createdOn;
+    private Instant updatedOn;
+    private Instant completedOn;
+    private String tagName;
 
     public TodoDto(Todo todo) {
         this.id = todo.getId();
@@ -29,5 +30,6 @@ public class TodoDto {
         this.createdOn = todo.getCreatedOn();
         this.updatedOn = todo.getUpdatedOn();
         this.completedOn = todo.getCompletedOn();
+        this.tagName = todo.getTag().getName();
     }
 }

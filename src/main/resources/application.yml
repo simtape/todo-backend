@@ -9,13 +9,4 @@ spring:
   application:
     name: todo-service
 
-  datasource:
-    url: jdbc:mysql://${TODO_DB_HOST:localhost}:${TODO_DB_PORT:15002}/${TODO_DB_DATABASE:todo-database}?createDatabaseIfNotExist=true&useSSL=false&useUnicode=true
-    username: ${TODO_DB_USER:todo-user}
-    password: ${TODO_DB_PASSWORD:todo-password}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-
 debug: false

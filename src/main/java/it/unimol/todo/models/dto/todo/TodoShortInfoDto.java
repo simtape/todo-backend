@@ -1,4 +1,4 @@
-package it.unimol.todo.models.dto;
+package it.unimol.todo.models.dto.todo;
 
 import it.unimol.todo.models.entities.Todo;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ import java.sql.Timestamp;
 public class TodoShortInfoDto {
     private Long id;
     private String title;
-    private Timestamp createdOn;
+    private Instant createdOn;
     private Boolean completed;
 
     public TodoShortInfoDto(Todo todo) {

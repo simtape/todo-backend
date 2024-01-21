@@ -1,48 +1,39 @@
 package it.unimol.todo.models.entities;
 
-import jakarta.persistence.*;
+import it.unimol.todo.models.Priority;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "todo")
 public class Todo {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
-    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "completed", nullable = false)
+    private Priority priority;
+
     private Boolean completed;
 
-    @CreationTimestamp
-    private Timestamp createdOn;
+    private Boolean starred;
 
-    @UpdateTimestamp
-    private Timestamp updatedOn;
+    private Instant createdOn;
 
-    @Column(name = "completed_on")
-    private Timestamp completedOn;
+    private Instant updatedOn;
 
-    @Column(name = "due_date")
-    private Timestamp dueDate;
+    private Instant completedOn;
 
-    @ManyToOne
-    @JoinColumn(name = "tag_id")
+    private Instant dueDate;
+
     private Tag tag;
 }
