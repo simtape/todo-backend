@@ -38,4 +38,11 @@ public class Todo {
 
     @Column(name = "completed_on")
     private Timestamp completedOn;
+
+    @Column(name = "due_date")
+    private Timestamp dueDate;
+
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
 }
