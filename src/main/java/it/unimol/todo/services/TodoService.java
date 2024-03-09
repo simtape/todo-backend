@@ -1,12 +1,16 @@
 package it.unimol.todo.services;
 
 import it.unimol.todo.models.Priority;
+import it.unimol.todo.models.dto.doer.DoerDto;
+import it.unimol.todo.models.dto.doer.DoerShortInfoDto;
 import it.unimol.todo.models.dto.tag.TagDto;
 import it.unimol.todo.models.dto.tag.TagShortInfoDto;
 import it.unimol.todo.models.dto.todo.TodoDto;
 import it.unimol.todo.models.dto.todo.TodoShortInfoDto;
+import it.unimol.todo.models.entities.Doer;
 import it.unimol.todo.models.entities.Tag;
 import it.unimol.todo.models.entities.Todo;
+import it.unimol.todo.models.request.doer.EditDoerRequest;
 import it.unimol.todo.models.request.tag.EditTagRequest;
 import it.unimol.todo.models.request.todo.EditTodoRequest;
 import it.unimol.todo.models.request.todo.PatchTodoPriorityRequest;
@@ -38,9 +42,10 @@ import static it.unimol.todo.models.Priority.MEDIUM;
 public class TodoService {
     private List<Todo> todos = new ArrayList<>();
     private List<Tag> tags = new ArrayList<>();
-    private int todoIdCounter;
-    private int doerIdCounter;
-    private int tagIdCounter;
+    private List<Doer> doers = new ArrayList<>();
+    private long todoIdCounter;
+    private long doerIdCounter;
+    private long tagIdCounter;
 
     private final SecretKeySpec key = AES.newSecretKeySpec(getUTF8Bytes("1234567890123456"));
     private final IvParameterSpec iv = new IvParameterSpec(getUTF8Bytes("1234567890123456"));
@@ -56,17 +61,19 @@ public class TodoService {
         this.tagIdCounter = 0;
     }
 
+    // to-do CRUD operations
+
     public void createTodo(EditTodoRequest editTodoRequest) {
-        if (!IsValidDescription(editTodoRequest.getDescription())) {
-            throw new RuntimeException("Invalid description.");
+        if (isNotValidDescription(editTodoRequest.getDescription())) {
+            throw new RuntimeException("Can't create todo without description.");
         }
 
         if (!isValidTitle(editTodoRequest.getTitle())) {
-            throw new RuntimeException("Invalid title.");
+            throw new RuntimeException("Can't create todo without title.");
         }
 
         if (tags.isEmpty()) {
-            throw new RuntimeException("Can't create todo without tags.");
+            throw new RuntimeException("Add at least a tag before creating a todo!");
         }
 
         Tag tag = this.tags.stream()
@@ -75,7 +82,7 @@ public class TodoService {
                 .orElseThrow(() -> new RuntimeException("Tag not found."));
 
         Todo todo = new Todo();
-        todo.setId((long) this.todoIdCounter++);
+        todo.setId(this.todoIdCounter++);
 
         todo.setTitle(editTodoRequest.getTitle());
         todo.setDescription(editTodoRequest.getDescription());
@@ -85,10 +92,9 @@ public class TodoService {
         todo.setStarred(false);
         todo.setCreatedOn(Instant.now());
         todo.setUpdatedOn(Instant.now());
+
         this.todos.add(todo);
     }
-
-    // to-do CRUD operations
 
     public TodoDto readTodo(Long id) {
         return this.todos.stream()
@@ -211,7 +217,7 @@ public class TodoService {
         }
 
         Tag tag = new Tag();
-        tag.setId((long) this.tagIdCounter++);
+        tag.setId(this.tagIdCounter++);
         tag.setName(editTagRequest.getName());
         tag.setCreatedOn(Instant.now());
         tag.setUpdatedOn(Instant.now());
@@ -281,29 +287,67 @@ public class TodoService {
                 .toList();
     }
 
-    public boolean IsValidDescription(String description) {
+    // doer CRUD operations
+    public void createDoer(EditDoerRequest editDoerRequest) {
+        if (!isValidDoerName(editDoerRequest.getName())) {
+            throw new RuntimeException("Invalid doer name");
+        }
+
+        if (!isValidDoerSurname(editDoerRequest.getSurname())) {
+            throw new RuntimeException("Invalid doer surname");
+        }
+
+        Doer doer = new Doer();
+        doer.setId(doerIdCounter);
+        doer.setName(editDoerRequest.getName());
+        doer.setSurname(editDoerRequest.getSurname());
+        doer.setEmail(editDoerRequest.getEmail());
+
+        doerIdCounter++;
+
+        doers.add(doer);
+    }
+
+    public DoerDto readDoer(Long id) {
+        return this.doers.stream()
+                .filter(doer -> doer.getId().equals(id))
+                .findFirst()
+                .map(DoerDto::new)
+                .orElseThrow(() -> new RuntimeException("Doer not found."));
+    }
+
+    public List<DoerShortInfoDto> readDoer() {
+        return doers.stream()
+                .map(DoerShortInfoDto::new)
+                .toList();
+    }
+
+
+    // input validity
+    public boolean isNotValidDescription(String description) {
         Pattern pattern = Pattern.compile(TEXT_REGEX);
         Matcher matcher = pattern.matcher(description);
 
-        return description.length() < 100 && !description.trim().isEmpty() /*&& matcher.matches()*/;
+        return description.length() >= 100 || description.trim().isEmpty() /*&& matcher.matches()*/;
     }
 
     public boolean isValidTitle(String title) {
         return title.length() <= 20 && !title.trim().isEmpty();
     }
 
-    public boolean isValidName(String name) {
+    public boolean isValidDoerName(String name) {
         Pattern pattern = Pattern.compile(NAME_AND_SURNAME_REGEX);
         Matcher matcher = pattern.matcher(name);
-        return name.length() <= 20 && !name.trim().isEmpty() /*&& matcher.matches()*/;
+        return name.length() <= 50 && !name.trim().isEmpty() /*&& matcher.matches()*/;
     }
 
-    public boolean isValidSurname(String surname) {
+    public boolean isValidDoerSurname(String surname) {
         Pattern pattern = Pattern.compile(NAME_AND_SURNAME_REGEX);
         Matcher matcher = pattern.matcher(surname);
-        return surname.length() <= 30 && !surname.trim().isEmpty() /*&& matcher.matches()*/;
+        return surname.length() <= 100 && !surname.trim().isEmpty() /*&& matcher.matches()*/;
     }
 
+    // encryption
     public String encrypt(String plainText) {
         Properties properties = new Properties();
         //Encryption with CryptoOutputStream.

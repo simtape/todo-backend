@@ -13,13 +13,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditTodoRequest {
-    @NotBlank(message = "Title is mandatory")
     private String title;
 
-    @NotBlank(message = "Description is mandatory")
     private String description;
 
-    @NotNull
     private Priority priority;
 
     private Long tagId;
