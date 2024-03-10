@@ -102,9 +102,14 @@ public class TodoService {
                                     .equals(todo.getTagId()))
                             .findFirst()
                             .orElseThrow(() -> new RuntimeException("Tag not found")).getName();
-                    return new TodoDto(todo, tagName);
-                })
-                .orElseThrow(() -> new RuntimeException("Todo not found."));
+
+                    Doer doer = this.doers.stream().filter(doer1 -> doer1
+                                    .getId()
+                                    .equals(todo.getDoerId()))
+                            .findFirst().orElse(null);
+
+                    return new TodoDto(todo, tagName, doer);
+                }).orElseThrow(() -> new RuntimeException("Todo not found."));
     }
 
     public List<TodoShortInfoDto> readTodo() {
