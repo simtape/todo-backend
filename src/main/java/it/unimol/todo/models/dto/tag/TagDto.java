@@ -1,7 +1,8 @@
 package it.unimol.todo.models.dto.tag;
 
-import it.unimol.todo.models.dto.todo.TodoShortInfoDto;
+import it.unimol.todo.models.dto.todo.TodoOnlyTitleAndIdDto;
 import it.unimol.todo.models.entities.Tag;
+import it.unimol.todo.models.entities.Todo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,16 +17,15 @@ import java.util.List;
 public class TagDto {
     private Long id;
     private String name;
-    private List<TodoShortInfoDto> todos;
+    private List<TodoOnlyTitleAndIdDto> todos;
 
-    public TagDto(Tag tag) {
+    public TagDto(Tag tag, List<Todo> todos) {
         this.id = tag.getId();
         this.name = tag.getName();
 
-        if (tag.getTodos() != null) {
-            this.todos = tag.getTodos()
-                    .stream()
-                    .map(TodoShortInfoDto::new)
+        if (todos != null) {
+            this.todos = todos.stream()
+                    .map(TodoOnlyTitleAndIdDto::new)
                     .toList();
         }
     }

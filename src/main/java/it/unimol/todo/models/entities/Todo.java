@@ -14,26 +14,20 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Todo {
-
     private Long id;
 
-    private String description;
+    private Long tagId;
+    private Long doerId;
 
+    private String description;
     private String title;
 
     private Priority priority;
-
     private Boolean completed;
-
     private Boolean starred;
 
     private Instant createdOn;
-
     private Instant updatedOn;
-
     private Instant completedOn;
-
     private Instant dueDate;
-
-    private Tag tag;
 }

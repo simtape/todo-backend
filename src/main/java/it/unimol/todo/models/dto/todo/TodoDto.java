@@ -22,7 +22,7 @@ public class TodoDto {
     private Instant completedOn;
     private String tagName;
 
-    public TodoDto(Todo todo) {
+    public TodoDto(Todo todo, String tagName) {
         this.id = todo.getId();
         this.title = todo.getDescription();
         this.description = todo.getDescription();
@@ -30,6 +30,6 @@ public class TodoDto {
         this.createdOn = todo.getCreatedOn();
         this.updatedOn = todo.getUpdatedOn();
         this.completedOn = todo.getCompletedOn();
-        this.tagName = todo.getTag().getName();
+        this.tagName = tagName;
     }
 }

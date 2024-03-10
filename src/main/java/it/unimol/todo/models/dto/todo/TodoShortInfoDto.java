@@ -18,12 +18,13 @@ public class TodoShortInfoDto {
     private String title;
     private Instant createdOn;
     private Boolean completed;
+    private String tagName;
 
-    public TodoShortInfoDto(Todo todo) {
+    public TodoShortInfoDto(Todo todo, String tagName) {
         this.id = todo.getId();
         this.title = todo.getTitle();
         this.createdOn = todo.getCreatedOn();
         this.completed = todo.getCompleted();
+        this.tagName = tagName;
     }
-
 }

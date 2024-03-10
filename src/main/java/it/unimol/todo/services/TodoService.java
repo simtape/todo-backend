@@ -72,11 +72,7 @@ public class TodoService {
             throw new RuntimeException("Can't create todo without title.");
         }
 
-        if (tags.isEmpty()) {
-            throw new RuntimeException("Add at least a tag before creating a todo!");
-        }
-
-        Tag tag = this.tags.stream()
+        this.tags.stream()
                 .filter(tag1 -> tag1.getId().equals(editTodoRequest.getTagId()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Tag not found."));
@@ -87,7 +83,7 @@ public class TodoService {
         todo.setTitle(editTodoRequest.getTitle());
         todo.setDescription(editTodoRequest.getDescription());
         todo.setPriority(editTodoRequest.getPriority());
-        todo.setTag(tag);
+        todo.setTagId(editTodoRequest.getTagId());
         todo.setCompleted(false);
         todo.setStarred(false);
         todo.setCreatedOn(Instant.now());
@@ -100,13 +96,27 @@ public class TodoService {
         return this.todos.stream()
                 .filter(todo -> todo.getId().equals(id))
                 .findFirst()
-                .map(TodoDto::new)
+                .map(todo -> {
+                    String tagName = this.tags.stream().filter(tag -> tag
+                                    .getId()
+                                    .equals(todo.getTagId()))
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("Tag not found")).getName();
+                    return new TodoDto(todo, tagName);
+                })
                 .orElseThrow(() -> new RuntimeException("Todo not found."));
     }
 
     public List<TodoShortInfoDto> readTodo() {
         return todos.stream()
-                .map(TodoShortInfoDto::new)
+                .map(todo -> {
+                    String tagName = this.tags.stream().filter(tag -> tag
+                                    .getId()
+                                    .equals(todo.getTagId()))
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("Tag not found")).getName();
+                    return new TodoShortInfoDto(todo, tagName);
+                })
                 .toList();
     }
 
@@ -244,11 +254,14 @@ public class TodoService {
     }
 
     public TagDto readTag(Long id) {
-        return this.tags.stream()
-                .filter(tag -> tag.getId().equals(id))
+        Tag tag = this.tags.stream()
+                .filter(matchingTag -> matchingTag.getId().equals(id))
                 .findFirst()
-                .map(TagDto::new)
                 .orElseThrow(() -> new RuntimeException("Tag not found."));
+
+        List<Todo> belongingTodos = this.todos.stream().filter(todo -> todo.getTagId().equals(id)).toList();
+
+        return new TagDto(tag, belongingTodos);
     }
 
     public List<TagShortInfoDto> readTag() {
@@ -269,7 +282,7 @@ public class TodoService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Tag not found."));
 
-        this.todos.stream().filter(todo -> todo.getTag().equals(tagToDelete)).findFirst()
+        this.todos.stream().filter(todo -> todo.getTagId().equals(tagToDelete.getId())).findFirst()
                 .ifPresentOrElse(
                         todo -> {
                             throw new RuntimeException("Tag is used by a todo.");
@@ -283,7 +296,14 @@ public class TodoService {
     public List<TodoShortInfoDto> getTodosByDate(Instant date) {
         return this.todos.stream()
                 .filter(todo -> todo.getCreatedOn().equals(date))
-                .map(TodoShortInfoDto::new)
+                .map(todo -> {
+                    String tagName = this.tags.stream().filter(tag -> tag
+                                    .getId()
+                                    .equals(todo.getTagId()))
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("Tag not found")).getName();
+                    return new TodoShortInfoDto(todo, tagName);
+                })
                 .toList();
     }
 
