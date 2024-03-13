@@ -188,6 +188,22 @@ public class TodoService {
                 );
     }
 
+    public void assignDoerToTodo(Long todoId, Long doerId){
+        Todo todo = this.todos.stream()
+                .filter(todo1 -> todo1.getId().equals(todoId))
+                .findFirst()
+                .orElseThrow(()->new RuntimeException("Todo not found"));
+
+        boolean doerNotExists = this.doers.stream()
+                .noneMatch(doer -> doer.getId().equals(doerId));
+
+        if(doerNotExists){
+            throw new RuntimeException("Doer not found");
+        }
+
+       /* todo.setDoerId();*/
+    }
+
     public List<Todo> readTodosByDefaultOrder() {
         return this.todos.stream()
                 .sorted(this::compareStarred)
@@ -347,6 +363,20 @@ public class TodoService {
                 .toList();
     }
 
+    public void deleteDoer(Long id) {
+        // cant delete if doer is assigned to a todo
+        this.todos.stream()
+                .filter(todo -> todo.getDoerId().equals(id))
+                .findFirst()
+                .ifPresentOrElse(
+                        todo -> {
+                            throw new RuntimeException("Doer is assigned to a todo.");
+                        },
+                        () -> {
+                            this.doers.removeIf(doer -> doer.getId().equals(id));
+                        }
+                );
+    }
 
     // input validity
     public boolean isNotValidDescription(String description) {

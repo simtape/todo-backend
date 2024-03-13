@@ -27,7 +27,7 @@ public class TodoDto {
 
     public TodoDto(Todo todo, String tagName, Doer doer) {
         this.id = todo.getId();
-        this.title = todo.getDescription();
+        this.title = todo.getTitle();
         this.description = todo.getDescription();
         this.completed = todo.getCompleted();
         this.createdOn = todo.getCreatedOn();

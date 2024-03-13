@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -30,4 +31,17 @@ public class Todo {
     private Instant updatedOn;
     private Instant completedOn;
     private Instant dueDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Todo todo = (Todo) o;
+        return Objects.equals(id, todo.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

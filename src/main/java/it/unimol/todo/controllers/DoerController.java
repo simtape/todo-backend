@@ -46,4 +46,12 @@ public class DoerController {
     public Response<DoerDto> read(@PathVariable Long id) {
         return new Response<>(this.todoService.readDoer(id));
     }
+
+    // delete endpoint
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    public Response<?> delete(@PathVariable Long id) {
+        this.todoService.deleteDoer(id);
+        return new Response<>();
+    }
 }
