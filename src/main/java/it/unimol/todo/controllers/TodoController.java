@@ -2,6 +2,7 @@ package it.unimol.todo.controllers;
 
 import it.unimol.todo.models.dto.todo.TodoDto;
 import it.unimol.todo.models.dto.todo.TodoShortInfoDto;
+import it.unimol.todo.models.request.todo.AssignTodoRequest;
 import it.unimol.todo.models.request.todo.PatchTodoPriorityRequest;
 import it.unimol.todo.models.request.todo.EditTodoRequest;
 import it.unimol.todo.models.response.Response;
@@ -91,5 +92,12 @@ public class TodoController {
     @GetMapping("/test-dec")
     public Response<String> testDec() {
         return new Response<>(this.todoService.decrypt());
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/assign")
+    public Response<?> assignTodo(@Valid @RequestBody AssignTodoRequest assignTodoRequest) {
+        this.todoService.assignTodo(assignTodoRequest);
+        return new Response<>();
     }
 }

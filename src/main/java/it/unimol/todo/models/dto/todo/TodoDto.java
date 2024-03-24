@@ -29,7 +29,7 @@ public class TodoDto {
         this.id = todo.getId();
         this.title = todo.getTitle();
         this.description = todo.getDescription();
-        this.completed = todo.getCompleted();
+        this.completed = todo.isCompleted();
         this.createdOn = todo.getCreatedOn();
         this.updatedOn = todo.getUpdatedOn();
         this.completedOn = todo.getCompletedOn();

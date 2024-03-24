@@ -20,6 +20,4 @@ public class Tag {
     private Instant createdOn;
 
     private Instant updatedOn;
-
-    private List<Todo> todos;
 }

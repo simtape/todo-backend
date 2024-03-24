@@ -12,6 +12,7 @@ import it.unimol.todo.models.entities.Tag;
 import it.unimol.todo.models.entities.Todo;
 import it.unimol.todo.models.request.doer.EditDoerRequest;
 import it.unimol.todo.models.request.tag.EditTagRequest;
+import it.unimol.todo.models.request.todo.AssignTodoRequest;
 import it.unimol.todo.models.request.todo.EditTodoRequest;
 import it.unimol.todo.models.request.todo.PatchTodoPriorityRequest;
 import org.apache.commons.crypto.stream.CryptoInputStream;
@@ -152,7 +153,7 @@ public class TodoService {
                 .findFirst()
                 .ifPresentOrElse(
                         todo -> {
-                            todo.setCompleted(!todo.getCompleted());
+                            todo.setCompleted(!todo.isCompleted());
                         },
                         () -> {
                             throw new RuntimeException("Todo not found.");
@@ -166,7 +167,7 @@ public class TodoService {
                 .findFirst()
                 .ifPresentOrElse(
                         todo -> {
-                            todo.setCompleted(!todo.getCompleted());
+                            todo.setStarred(!todo.isStarred());
                         },
                         () -> {
                             throw new RuntimeException("Todo not found.");
@@ -188,20 +189,20 @@ public class TodoService {
                 );
     }
 
-    public void assignDoerToTodo(Long todoId, Long doerId){
+    public void assignTodo(AssignTodoRequest assignTodoRequest){
         Todo todo = this.todos.stream()
-                .filter(todo1 -> todo1.getId().equals(todoId))
+                .filter(todo1 -> todo1.getId().equals(assignTodoRequest.getTodoId()))
                 .findFirst()
                 .orElseThrow(()->new RuntimeException("Todo not found"));
 
         boolean doerNotExists = this.doers.stream()
-                .noneMatch(doer -> doer.getId().equals(doerId));
+                .noneMatch(doer -> doer.getId().equals(assignTodoRequest.getDoerId()));
 
         if(doerNotExists){
             throw new RuntimeException("Doer not found");
         }
 
-       /* todo.setDoerId();*/
+        todo.setDoerId(assignTodoRequest.getDoerId());
     }
 
     public List<Todo> readTodosByDefaultOrder() {
@@ -212,11 +213,11 @@ public class TodoService {
     }
 
     private int compareStarred(Todo todo1, Todo todo2) {
-        if (todo1.getStarred() && todo2.getStarred()) {
+        if (todo1.isStarred() && todo2.isStarred()) {
             return todo1.getPriority().compareTo(todo2.getPriority());
-        } else if (todo1.getStarred()) {
+        } else if (todo1.isStarred()) {
             return -1;
-        } else if (todo2.getStarred()) {
+        } else if (todo2.isStarred()) {
             return 1;
         } else {
             return todo1.getPriority().compareTo(todo2.getPriority());
@@ -286,8 +287,12 @@ public class TodoService {
     }
 
     public List<TagShortInfoDto> readTag() {
+
         return this.tags.stream()
-                .map(TagShortInfoDto::new)
+                .map(tag->{
+                    List<Todo> belongingTodos = this.todos.stream().filter(todo -> todo.getTagId().equals(tag.getId())).toList();
+                    return new TagShortInfoDto(tag, belongingTodos.size());
+                })
                 .toList();
     }
 
@@ -338,23 +343,34 @@ public class TodoService {
             throw new RuntimeException("Invalid doer surname");
         }
 
+        if (editDoerRequest.getTagId() >=0) {
+            this.tags.stream()
+                    .filter(tag1 -> tag1.getId().equals(editDoerRequest.getTagId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Tag not found."));
+        } else {
+            throw new RuntimeException("Tag not found.");
+        }
+
+
         Doer doer = new Doer();
         doer.setId(doerIdCounter);
         doer.setName(editDoerRequest.getName());
         doer.setSurname(editDoerRequest.getSurname());
         doer.setEmail(editDoerRequest.getEmail());
+        doer.setTagId(editDoerRequest.getTagId());
 
         doerIdCounter++;
-
         doers.add(doer);
     }
 
     public DoerDto readDoer(Long id) {
-        return this.doers.stream()
-                .filter(doer -> doer.getId().equals(id))
+        Doer doer = this.doers.stream()
+                .filter(doer1 -> doer1.getId().equals(id))
                 .findFirst()
-                .map(DoerDto::new)
                 .orElseThrow(() -> new RuntimeException("Doer not found."));
+
+        return new DoerDto(doer);
     }
 
     public List<DoerShortInfoDto> readDoer() {
@@ -363,8 +379,43 @@ public class TodoService {
                 .toList();
     }
 
+    public void updateDoer(long id, EditDoerRequest editDoerRequest){
+        if (!isValidDoerName(editDoerRequest.getName())) {
+            throw new RuntimeException("Invalid doer name");
+        }
+
+        if (!isValidDoerSurname(editDoerRequest.getSurname())) {
+            throw new RuntimeException("Invalid doer surname");
+        }
+
+        if (editDoerRequest.getTagId() >0) {
+            this.tags.stream()
+                    .filter(tag1 -> tag1.getId().equals(editDoerRequest.getTagId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Tag not found."));
+        } else {
+            throw new RuntimeException("Tag not found.");
+        }
+
+        this.doers.stream()
+                .filter(doer -> doer.getId().equals(id))
+                .findFirst()
+                .ifPresentOrElse(
+                        doer -> {
+                            doer.setName(editDoerRequest.getName());
+                            doer.setSurname(editDoerRequest.getSurname());
+                            doer.setEmail(editDoerRequest.getEmail());
+                            doer.setTagId(editDoerRequest.getTagId());
+                        },
+                        () -> {
+                            throw new RuntimeException("Doer not found.");
+                        }
+                );
+
+    }
+
     public void deleteDoer(Long id) {
-        // cant delete if doer is assigned to a todo
+        // cant delete if doer is assigned to a to do
         this.todos.stream()
                 .filter(todo -> todo.getDoerId().equals(id))
                 .findFirst()
@@ -443,4 +494,7 @@ public class TodoService {
         return input.getBytes(StandardCharsets.UTF_8);
     }
 
+    public void patchDoerTag(Long id, EditDoerRequest editDoerRequest) {
+
+    }
 }

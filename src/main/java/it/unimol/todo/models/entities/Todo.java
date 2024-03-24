@@ -24,8 +24,8 @@ public class Todo {
     private String title;
 
     private Priority priority;
-    private Boolean completed;
-    private Boolean starred;
+    private boolean completed;
+    private boolean starred;
 
     private Instant createdOn;
     private Instant updatedOn;

@@ -15,12 +15,9 @@ public class TagShortInfoDto {
     private String name;
     private int todosCount;
 
-    public TagShortInfoDto(Tag tag) {
+    public TagShortInfoDto(Tag tag, int todosCount) {
         this.id = tag.getId();
         this.name = tag.getName();
-
-        if (tag.getTodos() != null) {
-            this.todosCount = tag.getTodos().size();
-        }
+        this.todosCount = todosCount;
     }
 }

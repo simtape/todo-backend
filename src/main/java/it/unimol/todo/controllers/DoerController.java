@@ -2,8 +2,6 @@ package it.unimol.todo.controllers;
 
 import it.unimol.todo.models.dto.doer.DoerDto;
 import it.unimol.todo.models.dto.doer.DoerShortInfoDto;
-import it.unimol.todo.models.dto.todo.TodoDto;
-import it.unimol.todo.models.dto.todo.TodoShortInfoDto;
 import it.unimol.todo.models.request.doer.EditDoerRequest;
 import it.unimol.todo.models.request.todo.EditTodoRequest;
 import it.unimol.todo.models.response.Response;
@@ -47,11 +45,25 @@ public class DoerController {
         return new Response<>(this.todoService.readDoer(id));
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{id}")
+    public Response<?> update(@PathVariable Long id, @Valid @RequestBody EditDoerRequest editDoerRequest) {
+        this.todoService.updateDoer(id, editDoerRequest);
+        return new Response<>();
+    }
+
     // delete endpoint
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public Response<?> delete(@PathVariable Long id) {
         this.todoService.deleteDoer(id);
+        return new Response<>();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/{id}")
+    public Response<?> patchDoerTag(@PathVariable Long id, @Valid @RequestBody EditDoerRequest editDoerRequest) {
+        this.todoService.patchDoerTag(id, editDoerRequest);
         return new Response<>();
     }
 }

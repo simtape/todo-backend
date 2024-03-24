@@ -16,7 +16,5 @@ public class Doer {
     private String name;
     private String surname;
     private String email;
-
-    private List<Todo> todoList;
-    private List<Tag> tagList;
+    private long tagId;
 }
