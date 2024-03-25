@@ -64,437 +64,145 @@ public class TodoService {
 
     // to-do CRUD operations
 
-    public void createTodo(EditTodoRequest editTodoRequest) {
-        if (isNotValidDescription(editTodoRequest.getDescription())) {
-            throw new RuntimeException("Can't create todo without description.");
-        }
-
-        if (!isValidTitle(editTodoRequest.getTitle())) {
-            throw new RuntimeException("Can't create todo without title.");
-        }
-
-        this.tags.stream()
-                .filter(tag1 -> tag1.getId().equals(editTodoRequest.getTagId()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Tag not found."));
-
-        Todo todo = new Todo();
-        todo.setId(this.todoIdCounter++);
-
-        todo.setTitle(editTodoRequest.getTitle());
-        todo.setDescription(editTodoRequest.getDescription());
-        todo.setPriority(editTodoRequest.getPriority());
-        todo.setTagId(editTodoRequest.getTagId());
-        todo.setCompleted(false);
-        todo.setStarred(false);
-        todo.setCreatedOn(Instant.now());
-        todo.setUpdatedOn(Instant.now());
-
-        this.todos.add(todo);
+    public void createTodo(EditTodoRequest editTodoRequest) {   
+        throw new RuntimeException("Create todo functionality: not implemented yet.");
     }
 
     public TodoDto readTodo(Long id) {
-        return this.todos.stream()
-                .filter(todo -> todo.getId().equals(id))
-                .findFirst()
-                .map(todo -> {
-                    String tagName = this.tags.stream().filter(tag -> tag
-                                    .getId()
-                                    .equals(todo.getTagId()))
-                            .findFirst()
-                            .orElseThrow(() -> new RuntimeException("Tag not found")).getName();
-
-                    Doer doer = this.doers.stream().filter(doer1 -> doer1
-                                    .getId()
-                                    .equals(todo.getDoerId()))
-                            .findFirst().orElse(null);
-
-                    return new TodoDto(todo, tagName, doer);
-                }).orElseThrow(() -> new RuntimeException("Todo not found."));
+        throw new RuntimeException("Read todo functionality: not implemented yet.");
     }
 
     public List<TodoShortInfoDto> readTodo() {
-        return todos.stream()
-                .map(todo -> {
-                    String tagName = this.tags.stream().filter(tag -> tag
-                                    .getId()
-                                    .equals(todo.getTagId()))
-                            .findFirst()
-                            .orElseThrow(() -> new RuntimeException("Tag not found")).getName();
-                    return new TodoShortInfoDto(todo, tagName);
-                })
-                .toList();
+        throw new RuntimeException("Read todo functionality: not implemented yet.");
     }
 
     public void deleteTodo(Long id) {
-        this.todos.removeIf(todo -> todo.getId().equals(id));
+        throw new RuntimeException("Delete todo functionality: not implemented yet.");
     }
 
     public void updateTodo(Long id, EditTodoRequest editTodoRequest) {
-        this.todos.stream()
-                .filter(todo -> todo.getId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        todo -> {
-                            todo.setTitle(editTodoRequest.getTitle());
-                            todo.setDescription(editTodoRequest.getDescription());
-                            todo.setUpdatedOn(Instant.now());
-                            todo.setPriority(editTodoRequest.getPriority());
-                        },
-                        () -> {
-                            throw new RuntimeException("Todo not found.");
-                        }
-                );
+        throw new RuntimeException("Update todo functionality: not implemented yet.");
     }
 
     public void patchTodoCompletedStatus(Long id) {
-        this.todos.stream()
-                .filter(todo -> todo.getId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        todo -> {
-                            todo.setCompleted(!todo.isCompleted());
-                        },
-                        () -> {
-                            throw new RuntimeException("Todo not found.");
-                        }
-                );
+        throw new RuntimeException("Patch todo completed status functionality: not implemented yet.");
     }
 
     public void patchTodoStarredStatus(Long id) {
-        this.todos.stream()
-                .filter(todo -> todo.getId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        todo -> {
-                            todo.setStarred(!todo.isStarred());
-                        },
-                        () -> {
-                            throw new RuntimeException("Todo not found.");
-                        }
-                );
+        throw new RuntimeException("Patch todo starred status functionality: not implemented yet.");
     }
 
     public void patchTodoPriority(Long id, PatchTodoPriorityRequest patchTodoPriorityRequest) {
-        this.todos.stream()
-                .filter(todo -> todo.getId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        todo -> {
-                            todo.setPriority(patchTodoPriorityRequest.getPriority());
-                        },
-                        () -> {
-                            throw new RuntimeException("Todo not found.");
-                        }
-                );
+        throw new RuntimeException("Patch todo priority functionality: not implemented yet.");
     }
 
     public void assignTodo(AssignTodoRequest assignTodoRequest){
-        Todo todo = this.todos.stream()
-                .filter(todo1 -> todo1.getId().equals(assignTodoRequest.getTodoId()))
-                .findFirst()
-                .orElseThrow(()->new RuntimeException("Todo not found"));
-
-        boolean doerNotExists = this.doers.stream()
-                .noneMatch(doer -> doer.getId().equals(assignTodoRequest.getDoerId()));
-
-        if(doerNotExists){
-            throw new RuntimeException("Doer not found");
-        }
-
-        todo.setDoerId(assignTodoRequest.getDoerId());
+        throw new RuntimeException("Assign todo functionality: not implemented yet.");
     }
 
     public List<Todo> readTodosByDefaultOrder() {
-        return this.todos.stream()
-                .sorted(this::compareStarred)
-                .sorted(this::comparePriority)
-                .toList();
+        throw new RuntimeException("Read todos by default order functionality: not implemented yet.");
+       
     }
 
     private int compareStarred(Todo todo1, Todo todo2) {
-        if (todo1.isStarred() && todo2.isStarred()) {
-            return todo1.getPriority().compareTo(todo2.getPriority());
-        } else if (todo1.isStarred()) {
-            return -1;
-        } else if (todo2.isStarred()) {
-            return 1;
-        } else {
-            return todo1.getPriority().compareTo(todo2.getPriority());
-        }
+       throw new RuntimeException("Compare starred functionality: not implemented yet.");
     }
 
     private int comparePriority(Todo todo1, Todo todo2) {
-        if (this.isPriorityBiggerThanAnother(todo1.getPriority(), todo2.getPriority())) {
-            return 1;
-        } else if (this.isPriorityBiggerThanAnother(todo2.getPriority(), todo1.getPriority())) {
-            return -1;
-        } else {
-            return 0;
-        }
+    
+        throw new RuntimeException("Compare priority functionality: not implemented yet.");
     }
 
     private Boolean isPriorityBiggerThanAnother(Priority priority1, Priority priority2) {
-        return switch (priority1) {
-            case MEDIUM -> priority2 == LOW;
-            case HIGH -> priority2 == LOW || priority2 == MEDIUM;
-            default -> false;
-        };
+        
+        throw new RuntimeException("Is priority bigger than another functionality: not implemented yet.");
     }
 
     // tag CRUD operations
     public void createTag(EditTagRequest editTagRequest) {
-        if (!isTagNameValid(editTagRequest.getName())) {
-            throw new RuntimeException("Invalid tag name.");
-        }
-
-        Tag tag = new Tag();
-        tag.setId(this.tagIdCounter++);
-        tag.setName(editTagRequest.getName());
-        tag.setCreatedOn(Instant.now());
-        tag.setUpdatedOn(Instant.now());
-        this.tags.add(tag);
+        throw new RuntimeException("Create tag functionality: not implemented yet.");
     }
 
     public void updateTag(Long id, EditTagRequest editTagRequest) {
-        if (!isTagNameValid(editTagRequest.getName())) {
-            throw new RuntimeException("Invalid tag name.");
-        }
-
-        this.tags.stream()
-                .filter(tag -> tag.getId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        tag -> {
-                            tag.setName(editTagRequest.getName());
-                            tag.setUpdatedOn(Instant.now());
-                        },
-                        () -> {
-                            throw new RuntimeException("Tag not found.");
-                        }
-                );
+        throw new RuntimeException("Update tag functionality: not implemented yet.");
     }
 
     public TagDto readTag(Long id) {
-        Tag tag = this.tags.stream()
-                .filter(matchingTag -> matchingTag.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Tag not found."));
-
-        List<Todo> belongingTodos = this.todos.stream().filter(todo -> todo.getTagId().equals(id)).toList();
-
-        return new TagDto(tag, belongingTodos);
+        throw new RuntimeException("Read tag functionality: not implemented yet.");
     }
 
     public List<TagShortInfoDto> readTag() {
-
-        return this.tags.stream()
-                .map(tag->{
-                    List<Todo> belongingTodos = this.todos.stream().filter(todo -> todo.getTagId().equals(tag.getId())).toList();
-                    return new TagShortInfoDto(tag, belongingTodos.size());
-                })
-                .toList();
+        throw new RuntimeException("Read tag functionality: not implemented yet.");
     }
 
     public boolean isTagNameValid(String name) {
-        Pattern pattern = Pattern.compile(NAME_AND_SURNAME_REGEX);
-        Matcher matcher = pattern.matcher(name);
-        return name.length() <= 10 && !name.trim().isEmpty() /*&& matcher.matches()*/;
+        throw new RuntimeException("Is tag name valid functionality: not implemented yet.");
     }
 
     public void deleteTag(Long id) {
-        Tag tagToDelete = this.tags.stream()
-                .filter(tag -> tag.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Tag not found."));
-
-        this.todos.stream().filter(todo -> todo.getTagId().equals(tagToDelete.getId())).findFirst()
-                .ifPresentOrElse(
-                        todo -> {
-                            throw new RuntimeException("Tag is used by a todo.");
-                        },
-                        () -> {
-                            this.tags.removeIf(tag -> tag.getId().equals(id));
-                        }
-                );
+        throw new RuntimeException("Delete tag functionality: not implemented yet.");
     }
 
     public List<TodoShortInfoDto> getTodosByDate(Instant date) {
-        return this.todos.stream()
-                .filter(todo -> todo.getCreatedOn().equals(date))
-                .map(todo -> {
-                    String tagName = this.tags.stream().filter(tag -> tag
-                                    .getId()
-                                    .equals(todo.getTagId()))
-                            .findFirst()
-                            .orElseThrow(() -> new RuntimeException("Tag not found")).getName();
-                    return new TodoShortInfoDto(todo, tagName);
-                })
-                .toList();
+        throw new RuntimeException("Get todos by date functionality: not implemented yet.");
     }
 
     // doer CRUD operations
     public void createDoer(EditDoerRequest editDoerRequest) {
-        if (!isValidDoerName(editDoerRequest.getName())) {
-            throw new RuntimeException("Invalid doer name");
-        }
-
-        if (!isValidDoerSurname(editDoerRequest.getSurname())) {
-            throw new RuntimeException("Invalid doer surname");
-        }
-
-        if (editDoerRequest.getTagId() >=0) {
-            this.tags.stream()
-                    .filter(tag1 -> tag1.getId().equals(editDoerRequest.getTagId()))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Tag not found."));
-        } else {
-            throw new RuntimeException("Tag not found.");
-        }
-
-
-        Doer doer = new Doer();
-        doer.setId(doerIdCounter);
-        doer.setName(editDoerRequest.getName());
-        doer.setSurname(editDoerRequest.getSurname());
-        doer.setEmail(editDoerRequest.getEmail());
-        doer.setTagId(editDoerRequest.getTagId());
-
-        doerIdCounter++;
-        doers.add(doer);
+       throw new RuntimeException("Create doer functionality: not implemented yet.");
     }
 
     public DoerDto readDoer(Long id) {
-        Doer doer = this.doers.stream()
-                .filter(doer1 -> doer1.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Doer not found."));
-
-        return new DoerDto(doer);
+        throw new RuntimeException("Read doer functionality: not implemented yet.");
     }
 
     public List<DoerShortInfoDto> readDoer() {
-        return doers.stream()
-                .map(DoerShortInfoDto::new)
-                .toList();
+        throw new RuntimeException("Read doer functionality: not implemented yet.");
     }
 
     public void updateDoer(long id, EditDoerRequest editDoerRequest){
-        if (!isValidDoerName(editDoerRequest.getName())) {
-            throw new RuntimeException("Invalid doer name");
-        }
-
-        if (!isValidDoerSurname(editDoerRequest.getSurname())) {
-            throw new RuntimeException("Invalid doer surname");
-        }
-
-        if (editDoerRequest.getTagId() >0) {
-            this.tags.stream()
-                    .filter(tag1 -> tag1.getId().equals(editDoerRequest.getTagId()))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Tag not found."));
-        } else {
-            throw new RuntimeException("Tag not found.");
-        }
-
-        this.doers.stream()
-                .filter(doer -> doer.getId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        doer -> {
-                            doer.setName(editDoerRequest.getName());
-                            doer.setSurname(editDoerRequest.getSurname());
-                            doer.setEmail(editDoerRequest.getEmail());
-                            doer.setTagId(editDoerRequest.getTagId());
-                        },
-                        () -> {
-                            throw new RuntimeException("Doer not found.");
-                        }
-                );
+        throw new RuntimeException("Update doer functionality: not implemented yet.");
 
     }
 
     public void deleteDoer(Long id) {
-        // cant delete if doer is assigned to a to do
-        this.todos.stream()
-                .filter(todo -> todo.getDoerId().equals(id))
-                .findFirst()
-                .ifPresentOrElse(
-                        todo -> {
-                            throw new RuntimeException("Doer is assigned to a todo.");
-                        },
-                        () -> {
-                            this.doers.removeIf(doer -> doer.getId().equals(id));
-                        }
-                );
+        throw new RuntimeException("Delete doer functionality: not implemented yet.");
     }
 
     // input validity
     public boolean isNotValidDescription(String description) {
-        Pattern pattern = Pattern.compile(TEXT_REGEX);
-        Matcher matcher = pattern.matcher(description);
 
-        return description.length() >= 100 || description.trim().isEmpty() /*&& matcher.matches()*/;
+        throw new RuntimeException("Is not valid description functionality: not implemented yet.");
     }
 
     public boolean isValidTitle(String title) {
-        return title.length() <= 20 && !title.trim().isEmpty();
+        throw new RuntimeException("Is valid title functionality: not implemented yet.");
     }
 
     public boolean isValidDoerName(String name) {
-        Pattern pattern = Pattern.compile(NAME_AND_SURNAME_REGEX);
-        Matcher matcher = pattern.matcher(name);
-        return name.length() <= 50 && !name.trim().isEmpty() /*&& matcher.matches()*/;
+    
+        throw new RuntimeException("Is valid doer name functionality: not implemented yet.");
     }
 
     public boolean isValidDoerSurname(String surname) {
-        Pattern pattern = Pattern.compile(NAME_AND_SURNAME_REGEX);
-        Matcher matcher = pattern.matcher(surname);
-        return surname.length() <= 100 && !surname.trim().isEmpty() /*&& matcher.matches()*/;
+        throw new RuntimeException("Is valid doer surname functionality: not implemented yet.");
     }
 
     // encryption
     public String encrypt(String plainText) {
-        Properties properties = new Properties();
-        //Encryption with CryptoOutputStream.
-
-        this.outputStream = new ByteArrayOutputStream();
-
-        try (CryptoOutputStream cos = new CryptoOutputStream(transform, properties, outputStream, key, iv)) {
-            cos.write(getUTF8Bytes(plainText));
-            cos.flush();
-
-            return Arrays.toString(outputStream.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        return null;
     }
 
     public String decrypt() {
-        Properties properties = new Properties();
-
-        InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-
-        try (CryptoInputStream cis = new CryptoInputStream(transform, properties, inputStream, key, iv)) {
-            byte[] decryptedData = new byte[1024];
-            int decryptedLen = 0;
-            int i;
-            while ((i = cis.read(decryptedData, decryptedLen, decryptedData.length - decryptedLen)) > -1) {
-                decryptedLen += i;
-            }
-
-            return new String(decryptedData, 0, decryptedLen, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return null;
     }
 
     private static byte[] getUTF8Bytes(final String input) {
-        return input.getBytes(StandardCharsets.UTF_8);
+        return null;
     }
 
     public void patchDoerTag(Long id, EditDoerRequest editDoerRequest) {
-
+        throw new RuntimeException("Patch doer tag functionality: not implemented yet.");
     }
 }
